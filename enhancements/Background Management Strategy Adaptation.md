@@ -26,7 +26,7 @@ final void appDiedLocked(ProcessRecord app, int pid, IApplicationThread thread, 
 ## Step 2
 
 Besides, a timeout is present in `ProcessGroup::killProcessGroup()` in `libprocessgroup` that prevents `forceStopPackage()` from stopping the app atomically.
-The fix is provided below.
+Our enhancement is provided below.
 
 ```diff
 /* system/core/libprocessgroup/processgroup.cpp */
