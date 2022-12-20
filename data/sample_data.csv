@@ -1,0 +1,101 @@
+error,scene,os_version,device_brand,device_model,device_type,failure_layer
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,10,google,pixel 2,physical,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,11,oppo,pbem00,physical,java
+java.lang.NullPointerException,null cannot be cast to non-null <method>,11,realme,realme rmx3092,physical,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,8,honor,yal-al00,physical,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,6,huawei,clt-al01,physical,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,8,huawei,vce-al00,physical,java
+java.lang.NullPointerException,Parameter specified as non-null is null: <method> ,8,oppo,oppo cph1907,physical,java
+java.lang.NullPointerException,Parameter specified as non-null is null: <method> ,11,oppo,oppo cph1937,physical,java
+java.lang.NullPointerException,null cannot be cast to non-null <method>,12,huawei,huawei hma-al00,physical,java
+java.lang.NullPointerException,Attempt to invoke virtual method '<method>' on null object reference,10,alps,gemini,physical,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,11,google,pixel 2,physical,java
+java.lang.NullPointerException,null cannot be cast to non-null <method>,11,huawei,huawei spn-al00,physical,java
+java.lang.NullPointerException,null cannot be cast to non-null <method>,11,lge,lge lm-v409n,physical,java
+java.lang.NullPointerException,null cannot be cast to non-null <method>,5,oppo,oppo pcpm00,physical,java
+java.lang.NullPointerException,Attempt to invoke virtual method '<method>' on null object reference,10,realme,realme rmx3092,physical,java
+java.lang.IllegalStateException,Nesting problem.,9,google,pixel 3,physical,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",8,oppo,pacm00,physical,java
+java.lang.IllegalStateException,Nesting problem.,9,google,pixel 2,physical,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",10,xiaomi,mi 8,physical,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",11,google,pixel 4,physical,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",10,vivo,v1962a,physical,java
+java.lang.OutOfMemoryError,Failed to allocate byte allocation with free bytes and until OOM ; failed due to fragmentation (largest possible contiguous allocation bytes),11,samsung,samsung sm-g9730,physical,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",10,google,pixel 4,physical,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",10,huawei,jer-an10,physical,java
+java.lang.OutOfMemoryError,Failed to allocate byte allocation with free bytes and until OOM ,9,huawei,huawei ana-an00,physical,java
+"signal 6, code -1",Abort Message: 'Check failed: found_virtual Didn't find oat method index for virtual method: java.lang.String[] android.icu.impl.ICUResourceBundle.getStringArray()',8,google,google pixel 2,physical,native
+"signal 6, code -1",Abort Message: 'Check failed: found_virtual Didn't find oat method index for virtual method: java.lang.String[] android.icu.impl.ICUResourceBundle.getStringArray()',10,google,google pixel 3,physical,native
+"signal 6, code -6",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,10,xiaomi,xiaomi mi 8,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,8,docomo,docomo so-03k,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,11,xiaomi,xiaomi mi 9,physical,native
+"signal 6, code -1",Pending java.lang.OutOfMemoryError,9,redmi,redmi m2007j3sc,physical,native
+"signal 6, code -1",Abort Message: 'Check failed: found_virtual Didn't find oat method index for virtual method: java.lang.String[] android.icu.impl.ICUResourceBundle.getStringArray()',11,google,google pixel 3,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,11,vivo,vivo v1938ct,physical,native
+"signal 11, code 1",Abort Message: 'Thread[] attempting to detach while still running code',9,huawei,huawei spn-al00,physical,native
+"signal 6, code -1","Abort Message: 'Failed to create context, error = EGL_NOT_INITIALIZED'",7,google,google pixel 4,physical,native
+"signal 6, code -1","Abort Message: 'Failed to create context, error = EGL_NOT_INITIALIZED'",11,google,google pixel 4,physical,native
+"signal 6, code -6",Pending java.lang.IllegalAccessError,11,honor,honor lra-al00,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,9,honor,honor hlk-al00,physical,native
+"signal 6, code -6",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,10,oppo,oppo pacm00,physical,native
+"signal 6, code -1",Abort Message: 'Check failed: found_virtual Didn't find oat method index for virtual method: java.lang.String[] android.icu.impl.ICUResourceBundle.getStringArray()',10,google,google pixel 3,physical,native
+"signal 6, code -1","Abort Message: 'Failed to create context, error = EGL_NOT_INITIALIZED'",8,google,google pixel 4,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,9,vivo,vivo v1938ct,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,7,redmi,redmi m2010j19sc,physical,native
+"signal 5, code 1",Abort Message: '[::/.:FATAL:jni_android.cc()] Failed to find class java/lang/String ',11,samsung,samsung sm-a908n,physical,native
+"signal 5, code -6",Abort Message: '[FATAL:browser_gpu_channel_host_factory.cc()] Timed out waiting for GPU channel. ',9,xiaomi,xiaomi mi 9,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,9,oppo,oppo pacm00,physical,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,12,motorola,motorola moto g power,physical,native
+"signal 6, code -1",Abort Message: 'ubsan: implicit-conversion',10,huawei,huawei vce-al00,physical,native
+"signal 6, code -1",Abort Message: 'ubsan: implicit-conversion',6,huawei,huawei bla-tl00,physical,native
+"signal 6, code -1",Abort Message: 'ubsan: implicit-conversion',11,huawei,huawei vce-al00,physical,native
+java.lang.NullPointerException,Attempt to write to field '<method>' on null object reference,11,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,12,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,10,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,9,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Parameter specified as non-null is null: <method> ,7,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,8,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,8,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,10,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,5,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,11,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to invoke interface method '<method>' on null object reference,11,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Attempt to read from field '<method>' on null object reference,11,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,Parameter specified as non-null is null: <method> ,7,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,must not be null,11,virtualized,virtualized,virtualized,java
+java.lang.NullPointerException,must not be null,11,virtualized,virtualized,virtualized,java
+kotlin.UninitializedPropertyAccessException,lateinit property mAppContext has not been initialized,11,virtualized,virtualized,virtualized,java
+kotlin.UninitializedPropertyAccessException,lateinit property bulletContainerView has not been initialized,10,virtualized,virtualized,virtualized,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",10,virtualized,virtualized,virtualized,java
+java.lang.IllegalArgumentException,View <view> not attached to window manager,9,virtualized,virtualized,virtualized,java
+java.lang.IllegalArgumentException,View <view> not attached to window manager,9,virtualized,virtualized,virtualized,java
+java.lang.IndexOutOfBoundsException,"Index: , Size: ",9,virtualized,virtualized,virtualized,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",8,virtualized,virtualized,virtualized,java
+android.content.res.Resources$NotFoundException,Resources#Assets: [<path>] ResMrg#Res#Assets: [<path>] AssetPathCache#Assets:<path>Resource ID #,7,virtualized,virtualized,virtualized,java
+kotlin.UninitializedPropertyAccessException,lateinit property bulletContainerView has not been initialized,5,virtualized,virtualized,virtualized,java
+java.lang.ClassNotFoundException,"Didn't find class ""<class>"" on path",5,virtualized,virtualized,virtualized,java
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',10,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,10,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,9,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',9,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',11,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,9,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,11,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException: Index: Size: ,9,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',10,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',10,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',9,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'JNI FatalError called: java.lang.Error thrown during binder transaction: java.lang.OutOfMemoryError: OutOfMemoryError thrown while trying to throw an exception; no stack trace available',7,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',5,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',6,virtualized,virtualized,virtualized,native
+"signal 6, code -6",Abort Message: Pending java.lang.OutOfMemoryError,7,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',8,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',12,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',10,virtualized,virtualized,virtualized,native
+"signal 6, code -1",Abort Message: 'terminating with uncaught exception of type CustomException',9,virtualized,virtualized,virtualized,native
+"signal 11, code 2",#00 /apex/com.android.runtime/lib/bionic/libc.so,10,virtualized,virtualized,virtualized,native
+"signal 11, code 2",#00 /apex/com.android.runtime/lib/bionic/libc.so,7,virtualized,virtualized,virtualized,native
+"signal 11, code 2",#00 /apex/com.android.runtime/lib/bionic/libc.so,9,virtualized,virtualized,virtualized,native
+"signal 11, code 1",#00 /system/lib/libandroidfw.so (_ZN7android12CursorWindow8allocRowEv+23),10,virtualized,virtualized,virtualized,native
+"signal 11, code 1",#00 /system/lib/libandroidfw.so (_ZN7android12CursorWindow8allocRowEv+23),11,virtualized,virtualized,virtualized,native
+"signal 11, code 1",#00 /system/lib/libandroidfw.so (_ZN7android12CursorWindow8allocRowEv+23),11,virtualized,virtualized,virtualized,native
