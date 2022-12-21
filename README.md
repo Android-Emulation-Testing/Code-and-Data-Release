@@ -6,7 +6,8 @@ This repo contains the code and data involved in our study.
 
 ### Failure Scene Capture
 
-We have provided the source code of captureing failure scene mentioned in our paper in the [`capture` folder](https://github.com/Android-Emulation-Testing/code-and-data/tree/main/capture).
+We have provided the source code of the failure scene capture mechanisms mentioned in our paper in the [`capture` folder](https://github.com/Android-Emulation-Testing/code-and-data/tree/main/capture).
+
 ### Enhancements
 
 We have provided the source code of the enhancements mentioned in our paper in the [`enhancements` folder](https://github.com/Android-Emulation-Testing/code-and-data/tree/main/enhancements).

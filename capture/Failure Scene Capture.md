@@ -1,9 +1,11 @@
 # Failure Scene Capture
 
-To effectively capture failure scene, we propose a considerate method that combines content-aware memory image pruning with failsafe data collection. Our method is implemented based on [xCrash](https://github.com/iqiyi/xCrash).
+To effectively capture failure scene, we propose a considerate method that combines content-aware memory image pruning with failsafe data collection.
+The source code we provide below is based on [xCrash](https://github.com/iqiyi/xCrash), an open-source failure capture tool for Android.
 
 ## Memory Image Pruning and Recording
 Compared to existing tools, we additionally record the in-situ memory data to realize comprehensive data capturing. Specifically, instead of directly `coredump`ing the full image of the process memory, we carefully prune the image to reduce the excessive storage overhead.
+The image-pruning mechanism is implemented in `fc_coredump_memory()`.
 
 ```c++
 #define CHECK_MAPS(_maps)
@@ -64,8 +66,8 @@ static size_t dump_size(fc_map_t* map, int java_dump){
     return map->end - map->start;
 }
 /*
-coredump the process memory image
-'xcd_maps_t' and 'xcd_maps_itme_t' are defined in 'xcd_maps.c' (whose location in xCrash tree is 'xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c')
+ * coredump the process memory image.
+ * 'xcd_maps_t' and 'xcd_maps_itme_t' are defined in 'xcd_maps.c' (whose location in xCrash tree is 'xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c')
 */
 void fc_coredump_memory(xcd_maps_t *self, int fd){
     xcd_maps_itme_t *mi;
@@ -104,7 +106,7 @@ void fc_coredump_memory(xcd_maps_t *self, int fd){
 ```
 
 ##  Failsafe Data Collection
-In addition, the data collection are excuted in four dedicated processes instead of a single one for failsafe. Our modifications mainly involve the `xcd_process_record` function in [`xcd_process.c`](https://github.com/iqiyi/xCrash/blob/master/xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c#L389)
+In addition, the data collection are excuted in four dedicated processes instead of a single one for failsafe. Our modifications mainly involve the `xcd_process_record` function in [`xcd_process.c`](https://github.com/iqiyi/xCrash/blob/master/xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c#L389).
 
 ```diff
 int xcd_process_record(xcd_process_t *self,
