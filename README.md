@@ -1,24 +1,44 @@
 # Code and Data Release
 
 This repo contains the code and data involved in our study.
+They are organized as follows.
 
-## Code Release
+```
+Code-and-Data-Release
+|---- Enhancements
+      |---- Background Management Strategy Adaptation
+      |---- Dynamic Binary Patching
+      |---- Graphics Resource Format Extension
+|---- Failure Scene Capture
+|---- Measurement data
+```
 
-### Failure Scene Capture
+### Code Release
 
-We have provided the source code of the failure scene capture mechanisms mentioned in our paper in the [`capture` folder](https://github.com/Android-Emulation-Testing/code-and-data/tree/main/capture).
+#### Failure Scene Capture
 
-### Enhancements
+To effectively capture failure scenes, we propose a considerate method that combines content-aware memory image pruning with failsafe data collection.
+We have provided the source code of the failure scene capture mechanisms in the [`Failure Scene Capture` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Failure%20Scene%20Capture).
 
-We have provided the source code of the enhancements mentioned in our paper in the [`enhancements` folder](https://github.com/Android-Emulation-Testing/code-and-data/tree/main/enhancements).
+#### Enhancements
 
-## Data Release
+In order to effectively enhance the testing fidelity on virtualized devices, we have devised threefold enhancements that eliminate most of the failure discrepancies in reality:
 
-We have provided in part the measurement data (with proper anonymization) in the [`data` folder](https://github.com/Android-Emulation-Testing/code-and-data/tree/main/data). 
+ * Graphics Resource Format Extension
+ * Background Management Strategy Adaptation
+ * Dynamic Binary Patching
+
+We have provided the source code of the above enhancements in the [`Enhancements` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Enhancements).
+
+### Data Release
+
+We have provided in part the measurement data (with proper anonymization) in the [`Measurement data` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Measurement%20Data). 
 We will release the full dataset as soon as we obtain official approval of the relevant authorities.
 
-### Data Format
+#### Data Format
 
+The data file is organized in `.csv` format. 
+Each row corresponds to a failure event.
 The attributes of each failure event are organized as follows:
 
 |  Attribute   | Description  |
