@@ -26,7 +26,3 @@ The full list of files we modify is listed below. The modified files are availab
 |   [`ActivityManagerConstants.java`](ActivityManagerConstants.java)   |   `DEFAULT_BACKGROUND_SETTLE_TIME, DEFAULT_CONTENT_PROVIDER_RETAIN_TIME`   |  Background Management Strategy Tuning  | `frameworks/base/services/core/java/com/android/server/am/ActivityManagerConstants.java` |
 |   [`config.xml`](config.xml)   |   `config_lowMemoryKillerMinFreeKbytesAbsolute, config_extraFreeKbytesAbsolute`   |  Background Management Strategy Tuning  | `frameworks/base/core/res/res/values/config.xml` |
 |   [`device.mk`](device.mk)   |   `PRODUCT_PROPERTY_OVERRIDES`   |  Background Management Strategy Tuning   | `device/google/cuttlefish/shared/device.mk` |
-
-
-Note: the above enhancement is based on the `android10-release` branch, since, at the time of our study, Android 10 is the most prevalent version among the users of T-video.
-The related logic in other Android versions stay largely unchanged, and therefore you can port the fix to any recent Android version that you desire. 
