@@ -4,7 +4,7 @@
 ![license](https://img.shields.io/badge/Version-Beta-yellow "Version")
 ![license](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg "Apache")
 
-This repository contains the code and data involved in our study.
+This repository contains the code and data we release to enable high-fidelity mobile app testing on virtualized devices at scale.
 They are organized as follows.
 
 ```
