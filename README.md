@@ -1,16 +1,20 @@
-# Code and Data Release
+# Code and Data Release for High-Fidelity Mobile App Testing on Virtualized Devices at Scale
 
-This repo contains the code and data involved in our study.
+![license](https://img.shields.io/badge/Platform-Android-green "Android")
+![license](https://img.shields.io/badge/Version-Beta-yellow "Version")
+![license](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg "Apache")
+
+This repository contains the code and data involved in our study.
 They are organized as follows.
 
 ```
 Code-and-Data-Release
+|---- Failure Scene Capture
 |---- Enhancements
+      |---- Graphics Resource Format Extension
       |---- Background Management Strategy Adaptation
       |---- Dynamic Binary Patching
-      |---- Graphics Resource Format Extension
-|---- Failure Scene Capture
-|---- Measurement data
+|---- Measurement Data
 ```
 
 ### Code Release
@@ -32,7 +36,7 @@ We have provided the source code of the above enhancements in the [`Enhancements
 
 ### Data Release
 
-We have provided in part the measurement data (with proper anonymization) in the [`Measurement data` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Measurement%20Data). 
+We have provided in part the measurement data (with proper anonymization) in the [`Measurement Data` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Measurement%20Data). 
 We will release the full dataset as soon as we obtain official approval of the relevant authorities.
 
 #### Data Format
