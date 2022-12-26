@@ -32,11 +32,28 @@ In order to effectively enhance the testing fidelity on virtualized devices, we 
  * Background Management Strategy Adaptation
  * Dynamic Binary Patching
 
-We have provided the source code of the above enhancements in the [`Enhancements` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Enhancements).
+For each enhancement, we have released our source code as well as a detailed `README.md` document.
+For more information, please consult the [`Enhancements` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Enhancements).
+
+#### Failure Discrepancy Report
+
+We have reported the root causes and solutions of the failure discrepancies to all the corresponding stakeholders, including phone vendors (e.g., Huawei, Honor, and Meizu) and hardware manufacturers (e.g., MediaTek).
+The complete list of our reported failures is provided below.
+
+| Index | Stakeholder | Description | Current State |
+| ----- | ----------- | ----------- | ------------- |
+| 1     | Huawei | Integer overflow during implicit conversions | Confirmed & Fixed |
+| 2     | Meizu | Improper null-terminations of C/C++ strings in vendor modules | Confirmed & Fixed |
+| 3     | Honor | Integer overflow during implicit conversions | Confirmed & Fixed |
+| 4     | Huawei, Xiaomi | Deadlock in system server when accessing local media files | Confirmed & Fixed |
+| 5     | Smartisan | Incorrect handling of page faults in the FUSE filesystem | Confirmed & Fixed |
+| 6     | MediaTek | Errors in MediaTek’s GPU drivers | Confirmed |
+| 7     | Samsung | Array index out of bounds in vendor modules | Confirmed |
+| 8     | Google | Graphics resource format inconsistency | [Reported](https://issuetracker.google.com/issues/262255458) |
 
 ### Data Release
 
-We have provided in part the measurement data (with proper anonymization) in the [`Measurement Data` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Measurement%20Data). 
+To benefit the community, we have provided in part the measurement data (with proper anonymization) in the [`Measurement Data` folder](https://github.com/Android-Emulation-Testing/Code-and-Data-Release/tree/main/Measurement%20Data). 
 We will release the full dataset as soon as we obtain official approval of the relevant authorities.
 
 #### Data Format

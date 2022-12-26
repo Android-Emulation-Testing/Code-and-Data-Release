@@ -1,6 +1,8 @@
 ## Measurement Data
 
-This directory contains the measurement data of failure events with proper anonymization.
+With our large-scale testing infrastructure and in-situ failure scene capturing method, we conduct a long-term study regarding the real-world performance of mobile app testing on virtualized devices from Jan. 1 to Mar. 31 in 2022.
+
+This directory contains the failure event data that we collected with proper anonymization.
 
 ## Data Format
 
