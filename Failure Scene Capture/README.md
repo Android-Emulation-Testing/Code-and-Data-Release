@@ -64,11 +64,11 @@ self recovery or event logging upon secondary failures.
 
 ## Implemention
 
-The source code we provide in this directory is based on [xCrash](https://github.com/iqiyi/xCrash), an open-source failure capture tool for Android (currently we only list those related to our enhancements). 
+The source code we provide in this directory is based on [xCrash](https://github.com/iqiyi/xCrash), an open-source failure capture tool for Android. 
 The full list of files we modify is listed below. The modified files are available in the current folder as well.
 
 | File | Added/Changed Symbols | Purpose | Location in xCrash |
 | ---- | ---- | ---- | ---- |
-|   [`xcd_maps.c`](xcd_maps.c)   |   `dump_size` (Added)   |  Prune the Memory Image  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c` |
-|   [`xcd_maps.c`](xcd_maps.c)   |   `fc_coredump_memory` (Added)  |  Dump the Memory Image  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c` |
-|   [`xcd_process.c`](xcd_process.c)   |   `xcd_process_record` (Changed)  |  Capture the Four-Fold In-Situ Information  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |
+|   [`xcd_maps.c`](xcd_maps.c)   |   `dump_size` (added)   |  Prune the memory image  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c` |
+|   [`xcd_maps.c`](xcd_maps.c)   |   `fc_coredump_memory` (added)  |  Dump the memory image  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c` |
+|   [`xcd_process.c`](xcd_process.c)   |   `xcd_process_record` (changed)  |  Capture the four-fold in-situ information  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |

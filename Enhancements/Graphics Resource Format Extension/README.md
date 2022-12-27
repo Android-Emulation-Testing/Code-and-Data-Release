@@ -25,9 +25,9 @@ We have provided our modifications to the `minigbm` library in this folder.
 Key changes to the library involve the use of unaligned heights in [`helpers.c`](helpers.c) and [`gbm.c`](gbm.c), and a synchronization of host's graphics capabilities with the guest in [`virtio_gpu.c`](virtio_gpu.c).
 We have also [reported the issues and the fixes](https://issuetracker.google.com/issues/262255458) to the development team of GAE.
 
-| File | Changed Symbols | Purpose | Location in AOSP |
+| File | Added/Changed Symbols | Purpose | Location in AOSP |
 | ---- | ---- | ---- | ---- |
-|   [`helpers.c`](helpers.c)   |   `drv_dumb_bo_create`   |   Use unaligned heights in YV12 buffer creation  | `external/minigbm/helpers.c` |
-|   [`gbm.c`](gbm.c)   |   `gbm_bo_create`   |   Use unaligned heights in YV12 buffer creation  | `external/minigbm/gbm.c` |
-|   [`virtio_gpu.c`](virtio_gpu.c)   |   `virtio_gpu_priv, translate_format, virtio_gpu_init, virtio_gpu_supports_format, virtio_gpu_add_combination, virtio_gpu_add_combinations, virtio_gpu_get_caps`   |  Sync the host's graphics capabilities with the guest  | `external/minigbm/virtio_gpu.c` |
-|   [`virgl_hw.h`](virgl_hw.h)   |   `VIRGL_FORMAT_YV12, VIRGL_FORMAT_YV16, VIRGL_FORMAT_IYUV, VIRGL_FORMAT_NV12, VIRGL_FORMAT_NV21`   |   YV12-related constant declarations  | `external/minigbm/virgl_hw.h` |
+|   [`helpers.c`](helpers.c)   |   `drv_dumb_bo_create` (changed)   |   Use unaligned heights in YV12 buffer creation  | `external/minigbm/helpers.c` |
+|   [`gbm.c`](gbm.c)   |   `gbm_bo_create` (changed)  |   Use unaligned heights in YV12 buffer creation  | `external/minigbm/gbm.c` |
+|   [`virtio_gpu.c`](virtio_gpu.c)   |   `virtio_gpu_supports_format`, `virtio_gpu_add_combination`, `virtio_gpu_add_combinations`, `virtio_gpu_get_caps` (added); `virtio_gpu_priv`, `translate_format`, `virtio_gpu_init` (changed)   |  Sync the host's graphics capabilities with the guest  | `external/minigbm/virtio_gpu.c` |
+|   [`virgl_hw.h`](virgl_hw.h)   |   `VIRGL_FORMAT_YV12`, `VIRGL_FORMAT_YV16`, `VIRGL_FORMAT_IYUV`, `VIRGL_FORMAT_NV12`, `VIRGL_FORMAT_NV21` (added)  |   YV12-related constant declarations  | `external/minigbm/virgl_hw.h` |

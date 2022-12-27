@@ -21,8 +21,8 @@ The full list of files we modify is listed below. The modified files are availab
 
 | File | Changed Symbols | Purpose | Location in AOSP |
 | ---- | ---- | ---- | ---- |
-|   [`ActivityManagerService.java`](ActivityManagerService.java)   |   `appDiedLocked`   |  Atomic Process Group Killing  | `frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java` |
-|   [`processgroup.cpp`](processgroup.cpp)   |   `KillProcessGroup`   |  Atomic Process Group Killing  | `system/core/libprocessgroup/processgroup.cpp` |
-|   [`ActivityManagerConstants.java`](ActivityManagerConstants.java)   |   `DEFAULT_BACKGROUND_SETTLE_TIME, DEFAULT_CONTENT_PROVIDER_RETAIN_TIME`   |  Background Management Strategy Tuning  | `frameworks/base/services/core/java/com/android/server/am/ActivityManagerConstants.java` |
-|   [`config.xml`](config.xml)   |   `config_lowMemoryKillerMinFreeKbytesAbsolute, config_extraFreeKbytesAbsolute`   |  Background Management Strategy Tuning  | `frameworks/base/core/res/res/values/config.xml` |
-|   [`device.mk`](device.mk)   |   `PRODUCT_PROPERTY_OVERRIDES`   |  Background Management Strategy Tuning   | `device/google/cuttlefish/shared/device.mk` |
+|   [`ActivityManagerService.java`](ActivityManagerService.java)   |   `appDiedLocked`   |  Atomic process group killing  | `frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java` |
+|   [`processgroup.cpp`](processgroup.cpp)   |   `KillProcessGroup`   |  Atomic process group killing  | `system/core/libprocessgroup/processgroup.cpp` |
+|   [`ActivityManagerConstants.java`](ActivityManagerConstants.java)   |   `DEFAULT_BACKGROUND_SETTLE_TIME, DEFAULT_CONTENT_PROVIDER_RETAIN_TIME`   |  Background management strategy tuning  | `frameworks/base/services/core/java/com/android/server/am/ActivityManagerConstants.java` |
+|   [`config.xml`](config.xml)   |   `config_lowMemoryKillerMinFreeKbytesAbsolute, config_extraFreeKbytesAbsolute`   |  Background management strategy tuning  | `frameworks/base/core/res/res/values/config.xml` |
+|   [`device.mk`](device.mk)   |   `PRODUCT_PROPERTY_OVERRIDES`   |  Background management strategy tuning   | `device/google/cuttlefish/shared/device.mk` |
