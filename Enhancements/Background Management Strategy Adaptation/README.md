@@ -1,14 +1,10 @@
 # Background Management Strategy Adaptation
 
-## Background
+## The Problem
 
 In our measurement of the fidelity of virtualized devices with respect to the testing of global-scale apps,
-we discover that 1% of the captured failure events occur
-much more frequently (up to 1025×) on physical devices
-than on virtualized devices.
+we discover that 1% of the captured failure events occur much more frequently (up to 1025×) on physical devices than on virtualized devices.
 We find out that such discrepancies root in Chinese vendors’ aggressive strategy for suppressing the background activities of apps.
-
-## The Problem
 
 The customized Android systems of some vendors (including Xiaomi, Huawei, Vivo, OPPO, Honor, and Redmi) aggressively throttle certain background apps by simultaneously killing all the processes in the app’s process group using the `forceStopPackage()` method provided by `ActivityManagerService`, without giving any warning or grace period to the app.
 This can easily trigger resource leakage or corruption in the app’s data files or databases, thus leading to more frequent failures on the physical devices than on virtualized devices running AOSP (i.e., creating a vicious circle).

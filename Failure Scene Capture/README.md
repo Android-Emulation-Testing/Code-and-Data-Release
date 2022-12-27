@@ -12,14 +12,14 @@ However, existing tools like Android Vitals and xCrash fail to satisfy the three
 
 ## Enhancements
 
-Our method enhance existing tools from the two aspects listed below. 
+Our method enhance existing tools from the two aspects listed below.
 ### Memory Image Pruning and Recording
 
 **The Motivation**
 
 In practice, production-level failure scene capturing tools focus on capturing three-fold information upon failures: 
 1) Android logcat that contains apps’ log outputs, 
-2) system resources like the opened file descriptors, and 
+2) system resources like the opened file descriptors,
 3) execution contexts like the call stacks and register values.
 
 However, we find that a major problem of them is the lack of in-situ memory data, which contain important debugging information (such as the corrupted memory data) for the analysis of various non-standard failure issues with regard to the proprietary hardware/software components of certain phone vendors.
@@ -45,9 +45,8 @@ This allows effective failure isolation among the processes, i.e., even when one
 
 ## Implemention
 
-The source code we provide in this directory is based on [xCrash](https://github.com/iqiyi/xCrash), an open-source failure capture tool for Android. 
-The full list of files we modify is listed below. 
-The modified files are available in the current folder as well.
+We implement our failure scene capturing mechanisms by making enhancements to [xCrash](https://github.com/iqiyi/xCrash), a popular open-source failure capture tool for Android.
+The full list of changed files is listed below.
 
 | File | Added/Changed Symbols | Purpose | Location in xCrash |
 | ---- | ---- | ---- | ---- |
@@ -56,3 +55,5 @@ The modified files are available in the current folder as well.
 |   [`xcd_process.c`](xcd_process.c)   |   `record_signal_handler` (added)  |  Safeguard  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |
 |   [`xcd_process.c`](xcd_process.c)   |   `record_safeguard` (added)  |  Safeguard  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |
 |   [`xcd_process.c`](xcd_process.c)   |   `xcd_process_record` (changed)  |  Capture the four-fold in-situ information  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |
+
+Note: the source code we provide in this directory is based on commit [`457066c`](https://github.com/iqiyi/xCrash/commit/457066ceb48fb84b993f1f04871d9e634d752792), the most recent commit of `xCrash` on the `master` branch at the time of our implementation.
