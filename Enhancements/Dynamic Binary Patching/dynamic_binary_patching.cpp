@@ -4,12 +4,20 @@
 #include <sys/mman.h>
 #include <dlfcn.h>
 
-
-const char SO_PATH[] = "/system/lib/libbinder.so";// the path to the target .so file
+/*******************************
+ * Failure-specific constants
+ *******************************/
+const char SO_PATH[] = "/system/lib/libbinder.so"; // the path to the target .so file
 const char TARGET_FUNCTION[] = "_ZTv0_n12_N7android15IServiceManagerD0Ev"; // the target function
 const uint64_t OFFSET = 0x44abe; // the offset of the target instruction from the beginnning of the target function
-const uint64_t PATCHED_INSTRUCTION = 0xbf00bf00; // whatever instructions you want to execute
+const uint32_t PATCHED_INSTRUCTION = 0xbf00bf00; // instructions that you want to execute
 
+/*******************************
+ * The actual dynamic binary patching method.
+ * In essence, we locate the TARGET_FUNCTION symbol in the .so file
+ * specified by SO_PATH, and replace the instructions at
+ * (TARGET_FUNCTION + OFFSET) with our PATCHED_INSTRUCTION.
+ *******************************/
 void dynamic_binary_patching() {
     void *handle = dlopen(SO_PATH, RTLD_NOW);
     if (handle == nullptr) {
@@ -29,7 +37,7 @@ void dynamic_binary_patching() {
     }
 
     // here you can inject code to the page target_address is in
-    *(uint64_t *)target_address = PATCHED_INSTRUCTION;
+    *(uint32_t *)target_address = PATCHED_INSTRUCTION;
 
     mprotect(page_address, 0x1000, PROT_READ | PROT_EXEC);
     cacheflush(page_address, (page_address + 0x1000));
