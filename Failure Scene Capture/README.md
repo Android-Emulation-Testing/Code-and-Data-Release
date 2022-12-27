@@ -72,3 +72,5 @@ The full list of files we modify is listed below. The modified files are availab
 |   [`xcd_maps.c`](xcd_maps.c)   |   `dump_size` (added)   |  Prune the memory image  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c` |
 |   [`xcd_maps.c`](xcd_maps.c)   |   `fc_coredump_memory` (added)  |  Dump the memory image  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_maps.c` |
 |   [`xcd_process.c`](xcd_process.c)   |   `xcd_process_record` (changed)  |  Capture the four-fold in-situ information  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |
+|   [`xcd_process.c`](xcd_process.c)   |   `record_signal_handler` (added)  |  Safeguard  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |
+|   [`xcd_process.c`](xcd_process.c)   |   `record_safeguard` (added)  |  Safeguard  | `xcrash_lib/src/main/cpp/xcrash_dumper/xcd_process.c` |

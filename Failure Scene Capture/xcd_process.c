@@ -43,6 +43,8 @@
 #include "xcc_util.h"
 #include "xcc_b64.h"
 #include "xcc_meminfo.h"
+#include "xcc_signal.h"
+#include "xcc_unwind.h"
 #include "xcd_log.h"
 #include "xcd_process.h"
 #include "xcd_thread.h"
@@ -386,6 +388,40 @@ static int xcd_process_if_need_dump(char *tname, regex_t *re, size_t re_cnt)
     return 0;
 }
 
+static int  api_level;
+int  record_fd;
+
+void record_signal_handler(int sig, siginfo_t *si, void *uc){
+        char buf[2048] = "\0";
+        size_t len;
+
+        (void)sig;
+
+        //restore the signal handler
+        if(0 != xcc_signal_crash_unregister()) _exit(10);
+
+        if(record_fd >= 0)
+        {
+            //dump signal, code, backtrace
+            if(0 != xcc_util_write_format_safe(record_fd,
+                                            "\n\n"
+                                            "xcrash error debug:\n"
+                                            "dumper has crashed (signal: %d, code: %d)\n",
+                                            si->si_signo, si->si_code)) goto end;
+            if(0 < (len = xcc_unwind_get(api_level, si, uc, buf, sizeof(buf))))
+                xcc_util_write(record_fd, buf, len);
+
+        end:
+            xcc_util_write_str(record_fd, "\n\n");
+        }
+        xcc_signal_crash_queue(si);
+    }
+static void record_safeguard()
+{
+    xcc_unwind_init(api_level);
+    xcc_signal_crash_register(record_signal_handler);
+}
+
 int xcd_process_record(xcd_process_t *self,
                        int log_fd,
                        unsigned int logcat_system_lines,
@@ -408,6 +444,7 @@ int xcd_process_record(xcd_process_t *self,
     int                thd_matched_regex = 0;
     int                thd_ignored_by_limit = 0;
     
+    record_fd = log_fd;
     TAILQ_FOREACH(thd, &(self->thds), link)
     {
         if(thd->t.tid == self->crash_tid)
@@ -421,6 +458,7 @@ int xcd_process_record(xcd_process_t *self,
             }
             else if(0 == context_pid)
             {
+                record_safeguard();
                 if(0 != (r = xcd_thread_record_info(&(thd->t), log_fd, self->pname))) goto err_context;
                 if(0 != (r = xcd_process_record_signal_info(self, log_fd))) goto err_context;
                 if(0 != (r = xcd_process_record_abort_message(self, log_fd, api_level))) goto err_context;
@@ -447,7 +485,8 @@ int xcd_process_record(xcd_process_t *self,
             }
             else if(0 == image_pid)
             {
-                //the memory image recording function mentioned above
+                record_safeguard();
+                //the memory image recording function
                 if(dump_map) if(0 != (r = fc_coredump_memory(self->maps, log_fd))) goto err_image; 
                 exit(0);
                 err_image:
@@ -463,6 +502,7 @@ int xcd_process_record(xcd_process_t *self,
             }
             else if(0 == logcat_pid)
             {
+                record_safeguard();
                 if(0 != (r = xcc_util_record_logcat(log_fd, self->pid, api_level, 
                         logcat_system_lines, logcat_events_lines,logcat_main_lines))) goto err_logcat; 
                 exit(0);
@@ -479,6 +519,7 @@ int xcd_process_record(xcd_process_t *self,
             }
             else if(0 == resource_pid)
             {
+                record_safeguard();
                 if(dump_fds) if(0 != (r = xcc_util_record_fds(log_fd, self->pid))) goto err_resource;
                 if(dump_network_info) if(0 != (r = xcc_util_record_network_info(log_fd, self->pid, api_level))) goto err_resource;
                 if(0 != (r = xcc_meminfo_record(log_fd, self->pid))) goto err_resource;
@@ -490,6 +531,7 @@ int xcd_process_record(xcd_process_t *self,
             break;
         }
     }
+
     if(!dump_all_threads) return 0;
 
     //parse thread name whitelist regex
