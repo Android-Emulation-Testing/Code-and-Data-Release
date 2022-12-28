@@ -116,9 +116,14 @@ PUBLIC struct gbm_bo *gbm_bo_create(struct gbm_device *gbm, uint32_t width, uint
 
 	if (!bo)
 		return NULL;
-	
+
+	/* Android-EMU: start of modification */
+
+	// Android-EMU: map minigbm YV12 format to Android YV12 format
 	if (format == GBM_FORMAT_YVU420 && (usage & GBM_BO_USE_LINEAR))
 		format = DRM_FORMAT_YVU420_ANDROID;
+
+	/* Android-EMU: end of modification */
 
 	bo->bo = drv_bo_create(gbm->drv, width, height, format, gbm_convert_usage(usage));
 

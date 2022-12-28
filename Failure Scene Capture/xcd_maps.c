@@ -276,17 +276,28 @@ uintptr_t xcd_maps_find_pc(xcd_maps_t *self, const char *pathname, const char *s
         if (NULL != strstr(map->name, _maps))
             return 0;
     } while(0)
-// prune the image by removing redundant and non-critical data
-static size_t dump_size(fc_map_t* map, int java_dump){
-    // ignore no permission segment
-    if (!(map->flags & PROT_READ) && !(map->flags & PROT_WRITE)){
+
+/* Android-EMU: start of modification */
+
+/**
+ * Android-EMU: 
+ * prune the image by removing redundant and non-critical data
+ */
+static size_t dump_size(fc_map_t* map, int java_dump)
+{
+    // ignore segments that we do not have access to
+    if (!(map->flags & PROT_READ) && !(map->flags & PROT_WRITE))
+    {
         return 0;
     }
-    if (map->name != NULL){
-        if (map->flags & PROT_EXEC){
+    if (map->name != NULL)
+    {
+        if (map->flags & PROT_EXEC)
+        {
             return 0;
         }
-        if (!map->dump_state){
+        if (!map->dump_state)
+        {
             CHECK_SUFFIX(".so");
         }
         CHECK_MAPS(".db");
@@ -307,7 +318,8 @@ static size_t dump_size(fc_map_t* map, int java_dump){
         CHECK_MAPS("event-log-tags");
         CHECK_MAPS("settings_config");
         CHECK_MAPS("thread signal stack");
-        if (!java_dump){
+        if (!java_dump)
+        {
             CHECK_MAPS("jit-cache");
             CHECK_MAPS(".art");
             CHECK_MAPS(".oat");
@@ -323,13 +335,19 @@ static size_t dump_size(fc_map_t* map, int java_dump){
             CHECK_MAPS("jit-cache");
         }
     }
-    else if (!(map->flags & PROT_WRITE)){
+    else if (!(map->flags & PROT_WRITE))
+    {
         return 0;
     }
     return map->end - map->start;
 }
-/* coredump the process memory image */
-void fc_coredump_memory(xcd_maps_t *self, int fd){
+
+/**
+ * Android-EMU:
+ * coredump the process memory image
+ */
+void fc_coredump_memory(xcd_maps_t *self, int fd)
+{
     xcd_maps_itme_t *mi;
     ElfW(Phdr) phdr;
     uintptr_t  size = 0;
@@ -343,15 +361,18 @@ void fc_coredump_memory(xcd_maps_t *self, int fd){
         phdr.p_memsz = mi->map.end - mi->map.start;
         offset += phdr.p_filesz;
         phdr.p_flags = m->map.flags & PROT_READ ? PF_R : 0;
-        if (m->map.flags & PROT_WRITE){
+        if (m->map.flags & PROT_WRITE)
+        {
             phdr.p_flags |= PF_W;
         }
-        if (m->map.flags & PROT_EXEC){
+        if (m->map.flags & PROT_EXEC)
+        {
             phdr.p_flags |= PF_X;
         }
         phdr.p_align = PAGE_SIZE;
         nwrite = XCC_UTIL_TEMP_FAILURE_RETRY(write(fd, &phdr, sizeof(phdr)));
-        if nwrite != sizeof(phdr){
+        if nwrite != sizeof(phdr)
+        {
             LOGE("FC: coredump error!");
             return;
         }
@@ -363,3 +384,5 @@ void fc_coredump_memory(xcd_maps_t *self, int fd){
         return;
     }
 }
+
+/* Android-EMU: end of modification */

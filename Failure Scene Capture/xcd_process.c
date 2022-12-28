@@ -388,10 +388,13 @@ static int xcd_process_if_need_dump(char *tname, regex_t *re, size_t re_cnt)
     return 0;
 }
 
-static int  api_level;
+/* Android-EMU: start of modification */
+
+static int api_level;
 int  record_fd;
 
-void record_signal_handler(int sig, siginfo_t *si, void *uc){
+void record_signal_handler(int sig, siginfo_t *si, void *uc)
+{
         char buf[2048] = "\0";
         size_t len;
 
@@ -415,12 +418,15 @@ void record_signal_handler(int sig, siginfo_t *si, void *uc){
             xcc_util_write_str(record_fd, "\n\n");
         }
         xcc_signal_crash_queue(si);
-    }
+}
+
 static void record_safeguard()
 {
     xcc_unwind_init(api_level);
     xcc_signal_crash_register(record_signal_handler);
 }
+
+/* Android-EMU: end of modification */
 
 int xcd_process_record(xcd_process_t *self,
                        int log_fd,
@@ -449,7 +455,10 @@ int xcd_process_record(xcd_process_t *self,
     {
         if(thd->t.tid == self->crash_tid)
         {
-            // record execution contexts
+            /* Android-EMU: start of modification */
+            
+            // Android-EMU: capture the four-fold in-situ information with the following four steps
+            // 1. record execution contexts
             pid_t context_pid = fork(); 
             if(-1 == context_pid)
             {
@@ -476,7 +485,7 @@ int xcd_process_record(xcd_process_t *self,
                     xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"excution context record failed");
                     return;
             }
-            // record the memory image 
+            // 2. record the memory image
             pid_t image_pid = fork();
             if(-1 == image_pid)
             {
@@ -493,7 +502,7 @@ int xcd_process_record(xcd_process_t *self,
                     xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"memory image record failed");
                     return;
             }
-            // record Android logcat
+            // 3. record Android logcat
             pid_t logcat_pid = fork();
             if(-1 == logcat_pid)
             {
@@ -510,7 +519,7 @@ int xcd_process_record(xcd_process_t *self,
                     xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"Android logcat record failed");
                     return;
             }
-            // record system resources
+            // 4. record system resources
             pid_t resource_pid = fork();
             if(-1 == resource_pid)
             {
@@ -528,6 +537,9 @@ int xcd_process_record(xcd_process_t *self,
                     xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"system resources record failed");
                     return;
             }
+
+            /* Android-EMU: end of modification */
+
             break;
         }
     }

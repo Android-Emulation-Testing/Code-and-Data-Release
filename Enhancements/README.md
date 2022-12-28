@@ -9,6 +9,8 @@ With these efforts, we manage to eliminate most of the discrepancies in reality.
 ## Code Organization
 
 This directory contains the source code for the three enhancements we make in the paper, with each folder corresponding to one enhancement. 
+To ease lookup, our modifications to existing libraries are marked with `Android-EMU: start of modification` and `Android-EMU: end of modification`.
+
 Apart from source code release, we have also provided a detailed `README.md` document for each enhancement.
 
 ## Code Portability

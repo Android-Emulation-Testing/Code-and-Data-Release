@@ -349,6 +349,14 @@ static int KillProcessGroup(uid_t uid, int initialPid, int signal, int retries) 
     while ((processes = DoKillProcessGroupOnce(cgroup, uid, initialPid, signal)) > 0) {
         LOG(VERBOSE) << "Killed " << processes << " processes for processgroup " << initialPid;
         if (retry > 0) {
+            /* Android-EMU: start of modification */
+
+            // std::this_thread::sleep_for(5ms);
+            // Android-EMU: 
+            // the above line has been commented out to avoid sleeping between retries
+            // otherwise, processing killing might not be fully atomic
+
+            /* Android-EMU: end of modification */
             --retry;
         } else {
             break;

@@ -36,7 +36,15 @@ static const uint32_t texture_source_formats[] = { DRM_FORMAT_R8, DRM_FORMAT_RG8
 
 struct virtio_gpu_priv {
 	int has_3d;
+
+	/* Android-EMU: start of modification */
+
+	// Android-EMU: store the graphics capabilities of the
+	// underlying virgl driver
 	union virgl_caps caps;
+	
+	/* Android-EMU: end of modification */
+
 };
 
 static uint32_t translate_format(uint32_t drm_fourcc, uint32_t plane)
@@ -56,11 +64,17 @@ static uint32_t translate_format(uint32_t drm_fourcc, uint32_t plane)
 		return VIRGL_FORMAT_R8_UNORM;
 	case DRM_FORMAT_RG88:
 		return VIRGL_FORMAT_R8G8_UNORM;
+
+	/* Android-EMU: start of modification */
+	// Android-EMU: allow NV12 and YV12 format translations
 	case DRM_FORMAT_NV12:
 		return VIRGL_FORMAT_NV12;
 	case DRM_FORMAT_YVU420:
 	case DRM_FORMAT_YVU420_ANDROID:
 		return VIRGL_FORMAT_YV12;
+
+	/* Android-EMU: end of modification */
+
 	default:
 		return 0;
 	}
@@ -181,11 +195,18 @@ static int virtio_gpu_init(struct driver *drv)
 		priv->has_3d = 0;
 	}
 
+	/* Android-EMU: start of modification */
+
+	// Android-EMU: detect the host's graphics capabilities
+	virtio_gpu_get_caps(drv, &priv->caps);
+
+	// Android-EMU: 
+	// replace drv_add_combination() calls with our virtio_gpu_add_combinations()
+	// enables synchronization of the host's graphics capabilities with the guest.
 	virtio_gpu_add_combinations(drv, render_target_formats, ARRAY_SIZE(render_target_formats),
 				    &LINEAR_METADATA, BO_USE_RENDER_MASK);
 
 	if (priv->has_3d) {
-		virtio_gpu_get_caps(drv, &priv->caps);
 		virtio_gpu_add_combinations(drv, texture_source_formats,
 					    ARRAY_SIZE(texture_source_formats), &LINEAR_METADATA,
 					    BO_USE_TEXTURE_MASK);
@@ -194,6 +215,8 @@ static int virtio_gpu_init(struct driver *drv)
 				     ARRAY_SIZE(dumb_texture_source_formats), &LINEAR_METADATA,
 				     BO_USE_TEXTURE_MASK);
 	}
+
+	/* Android-EMU: end of modification */
 
 	return drv_modify_linear_combinations(drv);
 }
@@ -300,26 +323,37 @@ static uint32_t virtio_gpu_resolve_format(uint32_t format, uint64_t use_flags)
 	}
 }
 
+/* Android-EMU: start of modification */
+
+/**
+ * Android-EMU:
+ * determine if virtio gpu is able to translate the given drm_format
+ */
 static bool virtio_gpu_supports_format(struct virgl_supported_format_mask *supported,
 				       uint32_t drm_format)
 {
 	return translate_format(drm_format) && (supported->bitmask[virgl_format / 32] & (1 << virgl_format % 32));
 }
 
+/**
+ * Android-EMU:
+ * checks if the drm_format is supported by the host
+ */
 static void virtio_gpu_add_combination(struct driver *drv, uint32_t drm_format,
 				       struct format_metadata *metadata, uint64_t use_flags)
 {
 	struct virtio_gpu_priv *priv = (struct virtio_gpu_priv *)drv->priv;
 
 	if (priv->has_3d) {
+		// if the format is unsupported
 		if ((use_flags & BO_USE_RENDERING) != 0 &&
-		    !virtio_gpu_supports_format(&priv->caps.v1.render, drm_format)) {
+			!virtio_gpu_supports_format(&priv->caps.v1.render, drm_format)) {
 			drv_log("Skipping unsupported render format: %d\n", drm_format);
 			return;
 		}
 
 		if ((use_flags & BO_USE_TEXTURE) != 0 &&
-		    !virtio_gpu_supports_format(&priv->caps.v1.sampler, drm_format)) {
+			!virtio_gpu_supports_format(&priv->caps.v1.sampler, drm_format)) {
 			drv_log("Skipping unsupported texture format: %d\n", drm_format);
 			return;
 		}
@@ -328,6 +362,10 @@ static void virtio_gpu_add_combination(struct driver *drv, uint32_t drm_format,
 	drv_add_combination(drv, drm_format, metadata, use_flags);
 }
 
+/**
+ * Android-EMU:
+ * calls virtio_gpu_add_combination in batch
+ */
 static void virtio_gpu_add_combinations(struct driver *drv, const uint32_t *drm_formats,
 					uint32_t num_formats, struct format_metadata *metadata,
 					uint64_t use_flags)
@@ -339,6 +377,10 @@ static void virtio_gpu_add_combinations(struct driver *drv, const uint32_t *drm_
 	}
 }
 
+/**
+ * Android-EMU:
+ * query the host's graphics capabilities
+ */
 static int virtio_gpu_get_caps(struct driver *drv, union virgl_caps *caps)
 {
 	int ret;
@@ -346,6 +388,7 @@ static int virtio_gpu_get_caps(struct driver *drv, union virgl_caps *caps)
 	struct drm_virtgpu_getparam param_args;
 	uint32_t can_query = 0;
 
+	// check if virtio gpu supports capability queries
 	memset(&param_args, 0, sizeof(param_args));
 	param_args.param = VIRTGPU_PARAM_CAPSET_QUERY_FIX;
 	param_args.value = (uint64_t)(uintptr_t)&can_query;
@@ -354,6 +397,7 @@ static int virtio_gpu_get_caps(struct driver *drv, union virgl_caps *caps)
 		drv_log("DRM_IOCTL_VIRTGPU_GETPARAM failed with %s\n", strerror(errno));
 	}
 
+	// prepare the query
 	memset(&cap_args, 0, sizeof(cap_args));
 	cap_args.addr = (unsigned long long)caps;
 	if (can_query) {
@@ -364,11 +408,12 @@ static int virtio_gpu_get_caps(struct driver *drv, union virgl_caps *caps)
 		cap_args.size = sizeof(struct virgl_caps_v1);
 	}
 
+	// perform the query
 	ret = drmIoctl(drv->fd, DRM_IOCTL_VIRTGPU_GET_CAPS, &cap_args);
 	if (ret) {
+		// fallback to the vanilla capability set
 		drv_log("DRM_IOCTL_VIRTGPU_GET_CAPS failed with %s\n", strerror(errno));
 
-		// Fallback to v1
 		cap_args.cap_set_id = 1;
 		cap_args.size = sizeof(struct virgl_caps_v1);
 
@@ -380,6 +425,8 @@ static int virtio_gpu_get_caps(struct driver *drv, union virgl_caps *caps)
 
 	return ret;
 }
+
+/* Android-EMU: end of modification */
 
 const struct backend backend_virtio_gpu = {
 	.name = "virtio_gpu",

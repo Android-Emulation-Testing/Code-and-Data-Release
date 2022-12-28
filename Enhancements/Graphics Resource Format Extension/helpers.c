@@ -285,7 +285,14 @@ int drv_dumb_bo_create(struct bo *bo, uint32_t width, uint32_t height, uint32_t 
 		return ret;
 	}
 
+	/* Android-EMU: start of modification */
+
+	// Android-EMU: here we pass 'bo->meta.height', 
+	// which is the unaligned height of the buffer object
+	// instead of 'height', the aligned height.
 	drv_bo_from_format(bo, create_dumb.pitch, bo->meta.height, format);
+
+	/* Android-EMU: end of modification */
 
 	for (plane = 0; plane < bo->num_planes; plane++)
 		bo->handles[plane].u32 = create_dumb.handle;

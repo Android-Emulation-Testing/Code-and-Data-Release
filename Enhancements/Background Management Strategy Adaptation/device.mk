@@ -32,13 +32,17 @@ PRODUCT_PRODUCT_PROPERTIES := \
     persist.traced.enable=1 \
     persist.heapprofd.enable=1 \
 
-# Background Management Strategy Adaptation
+# Android-EMU: start of modification
+
+# Android-EMU: tweak the behaviors of Android LowMemoryKiller
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.lmk.low=900 \
     ro.lmk.medium=800 \
     ro.lmk.psi_partial_stall_ms=50 \
     ro.lmk.psi_complete_stall_ms=500 \
- 
+
+# Android-EMU: end of modification
+
 # Explanation of specific properties:
 #   debug.hwui.swap_with_damage avoids boot failure on M http://b/25152138
 #   ro.opengles.version OpenGLES 3.0

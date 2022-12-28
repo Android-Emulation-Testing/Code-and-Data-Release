@@ -3720,7 +3720,14 @@ public class ActivityManagerService extends IActivityManager.Stub
             if (!fromBinderDied) {
                 killProcessQuiet(pid);
             }
+
+            /* Android-EMU: start of modification */
+
+            // Android-EMU: stop the app package atomically
             forceStopPackage(AppGlobals.getPackageManager().getNameForUid(app.uid), 0);
+
+            /* Android-EMU: end of modification */
+
             app.killed = true;
         }
 

@@ -47,6 +47,7 @@ This allows effective failure isolation among the processes, i.e., even when one
 
 We implement our failure scene capturing mechanisms by making enhancements to [xCrash](https://github.com/iqiyi/xCrash), a popular open-source failure capture tool for Android.
 The full list of changed files is listed below.
+To ease lookup, our modifications are marked with `Android-EMU: start of modification` and `Android-EMU: end of modification`.
 
 | File | Added/Changed Symbols | Purpose | Location in xCrash |
 | ---- | ---- | ---- | ---- |

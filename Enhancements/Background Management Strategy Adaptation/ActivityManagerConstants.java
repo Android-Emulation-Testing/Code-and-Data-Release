@@ -79,12 +79,26 @@ final class ActivityManagerConstants extends ContentObserver {
     static final String KEY_TOP_TO_FGS_GRACE_DURATION = "top_to_fgs_grace_duration";
 
     private static final int DEFAULT_MAX_CACHED_PROCESSES = 32;
+
+    /* Android-EMU: start of modification */
+
+    // Android-EMU: background management parameter tweak
     private static final long DEFAULT_BACKGROUND_SETTLE_TIME = 30*1000;
+
+    /* Android-EMU: end of modification */
+
     private static final long DEFAULT_FGSERVICE_MIN_SHOWN_TIME = 2*1000;
     private static final long DEFAULT_FGSERVICE_MIN_REPORT_TIME = 3*1000;
     private static final long DEFAULT_FGSERVICE_SCREEN_ON_BEFORE_TIME = 1*1000;
     private static final long DEFAULT_FGSERVICE_SCREEN_ON_AFTER_TIME = 5*1000;
+
+    /* Android-EMU: start of modification */
+
+    // Android-EMU: background management parameter tweak
     private static final long DEFAULT_CONTENT_PROVIDER_RETAIN_TIME = 10*1000;
+
+    /* Android-EMU: end of modification */
+
     private static final long DEFAULT_GC_TIMEOUT = 5*1000;
     private static final long DEFAULT_GC_MIN_INTERVAL = 60*1000;
     private static final long DEFAULT_FULL_PSS_MIN_INTERVAL = 20*60*1000;
