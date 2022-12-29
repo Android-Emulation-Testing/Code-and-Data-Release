@@ -276,6 +276,8 @@ int xcd_maps_record(xcd_maps_t *self, int log_fd)
     return 0;
 }
 
+/* Android-EMU: start of modification */
+
 /**
  * Android-EMU:
  * prune the image by removing redundant and non-critical data
@@ -351,9 +353,8 @@ int fc_coredump_memory(xcd_maps_t *self, int fd, int java_dump)
 {
     xcd_maps_item_t *mi;
     ElfW(Phdr) phdr;
-    Elf32_Off dataoff = get_dataoff();
-    Elf32_Off offset = dataoff;
-    uintptr_t  size = 0;
+    Elf32_Off offset = get_dataoff();
+    uintptr_t size = 0;
     TAILQ_FOREACH (mi, &(self->maps), link)
     {
         phdr.p_type = PT_LOAD;

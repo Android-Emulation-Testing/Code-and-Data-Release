@@ -539,7 +539,7 @@ int xcd_process_record(xcd_process_t *self,
                 return r;
             }
 
-            /* Android-EMU: end of modification */
+//            the original logic is commented out and provided below.
 //            if(0 != (r = xcd_thread_record_info(&(thd->t), log_fd, self->pname))) return r;
 //            if(0 != (r = xcd_process_record_signal_info(self, log_fd))) return r;
 //            if(0 != (r = xcd_process_record_abort_message(self, log_fd, api_level))) return r;
@@ -556,6 +556,8 @@ int xcd_process_record(xcd_process_t *self,
 //            if(dump_fds) if(0 != (r = xcc_util_record_fds(log_fd, self->pid))) return r;
 //            if(dump_network_info) if(0 != (r = xcc_util_record_network_info(log_fd, self->pid, api_level))) return r;
 //            if(0 != (r = xcc_meminfo_record(log_fd, self->pid))) return r;
+
+            /* Android-EMU: end of modification */
 
             break;
         }
