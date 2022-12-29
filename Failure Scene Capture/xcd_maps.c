@@ -26,6 +26,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <elf.h>
+#include <link.h>
+#include <unistd.h>
 #include "queue.h"
 #include "xcc_errno.h"
 #include "xcc_util.h"
@@ -33,6 +36,8 @@
 #include "xcd_map.h"
 #include "xcd_util.h"
 #include "xcd_log.h"
+
+#include "tvideo_utils.h"
 
 #define XCD_MAPS_ABORT_MSG_NAME    "[anon:abort message]"
 #define XCD_MAPS_ABORT_MSG_FLAGS   (PROT_READ | PROT_WRITE)
@@ -65,11 +70,11 @@ static int xcd_maps_parse_line(char *line, xcd_maps_item_t **mi)
     char      *name;
 
     *mi = NULL;
-    
+
     //scan
     if(sscanf(line, "%"SCNxPTR"-%"SCNxPTR" %4s %"SCNxPTR" %*x:%*x %*d%n", &start, &end, flags, &offset, &pos) != 4) return 0;
     name = xcc_util_trim(line + pos);
-    
+
     //create map
     if(NULL == (*mi = malloc(sizeof(xcd_maps_item_t)))) return XCC_ERRNO_NOMEM;
     return xcd_map_init(&((*mi)->map), start, end, offset, flags, name);
@@ -96,11 +101,11 @@ int xcd_maps_create(xcd_maps_t **self, pid_t pid)
             fclose(fp);
             return r;
         }
-        
+
         if(NULL != mi)
             TAILQ_INSERT_TAIL(&((*self)->maps), mi, link);
     }
-    
+
     fclose(fp);
     return 0;
 }
@@ -188,102 +193,101 @@ uintptr_t xcd_maps_find_pc(xcd_maps_t *self, const char *pathname, const char *s
     return 0; //not found
 }
 
-// int xcd_maps_record(xcd_maps_t *self, int log_fd)
-// {
-//     int              r;
-//     xcd_maps_item_t *mi;
-//     uintptr_t        size;
-//     uintptr_t        total_size = 0;
-//     size_t           max_size = 0;
-//     size_t           max_offset = 0;
-//     size_t           width_size = 0;
-//     size_t           width_offset = 0;
-//     uintptr_t        load_bias = 0;
-//     char             load_bias_buf[64] = "\0";
-//     char            *name;
-//     char            *prev_name = NULL;
+int xcd_maps_record(xcd_maps_t *self, int log_fd)
+{
+    int              r;
+    xcd_maps_item_t *mi;
+    uintptr_t        size;
+    uintptr_t        total_size = 0;
+    size_t           max_size = 0;
+    size_t           max_offset = 0;
+    size_t           width_size = 0;
+    size_t           width_offset = 0;
+    uintptr_t        load_bias = 0;
+    char             load_bias_buf[64] = "\0";
+    char            *name;
+    char            *prev_name = NULL;
 
-//     //get width of size and offset columns
-//     TAILQ_FOREACH(mi, &(self->maps), link)
-//     {
-//         size = mi->map.end - mi->map.start;
-//         if(size > max_size) max_size = size;
-//         if(mi->map.offset > max_offset) max_offset = mi->map.offset;
-//     }
-//     while(0 != max_size)
-//     {
-//         max_size /= 0x10;
-//         width_size++;
-//     }
-//     if(0 == width_size) width_size = 1;
-//     while(0 != max_offset)
-//     {
-//         max_offset /= 0x10;
-//         width_offset++;
-//     }
-//     if(0 == width_offset) width_offset = 1;
+    //get width of size and offset columns
+    TAILQ_FOREACH(mi, &(self->maps), link)
+    {
+        size = mi->map.end - mi->map.start;
+        if(size > max_size) max_size = size;
+        if(mi->map.offset > max_offset) max_offset = mi->map.offset;
+    }
+    while(0 != max_size)
+    {
+        max_size /= 0x10;
+        width_size++;
+    }
+    if(0 == width_size) width_size = 1;
+    while(0 != max_offset)
+    {
+        max_offset /= 0x10;
+        width_offset++;
+    }
+    if(0 == width_offset) width_offset = 1;
 
-//     //dump
-//     if(0 != (r = xcc_util_write_str(log_fd, "memory map:\n"))) return r;
-//     TAILQ_FOREACH(mi, &(self->maps), link)
-//     {
-//         //get load_bias
-//         if(NULL != mi->map.elf && 0 != (load_bias = xcd_elf_get_load_bias(mi->map.elf)))
-//             snprintf(load_bias_buf, sizeof(load_bias_buf), " (load bias 0x%"PRIxPTR")", load_bias);
-//         else
-//             load_bias_buf[0] = '\0';
+    //dump
+    if(0 != (r = xcc_util_write_str(log_fd, "memory map:\n"))) return r;
+    TAILQ_FOREACH(mi, &(self->maps), link)
+    {
+        //get load_bias
+        if(NULL != mi->map.elf && 0 != (load_bias = xcd_elf_get_load_bias(mi->map.elf)))
+            snprintf(load_bias_buf, sizeof(load_bias_buf), " (load bias 0x%"PRIxPTR")", load_bias);
+        else
+            load_bias_buf[0] = '\0';
 
-//         //fix name and load_bias
-//         if(NULL != mi->map.name)
-//         {
-//             if(NULL == prev_name)
-//                 name = mi->map.name;
-//             else if(0 == strcmp(prev_name, mi->map.name) && '\0' == load_bias_buf[0])
-//                 name = ">"; //same as prev line
-//             else
-//                 name = mi->map.name;
-//         }
-//         else
-//         {
-//             name = "";
-//         }
+        //fix name and load_bias
+        if(NULL != mi->map.name)
+        {
+            if(NULL == prev_name)
+                name = mi->map.name;
+            else if(0 == strcmp(prev_name, mi->map.name) && '\0' == load_bias_buf[0])
+                name = ">"; //same as prev line
+            else
+                name = mi->map.name;
+        }
+        else
+        {
+            name = "";
+        }
 
-//         //save prev name
-//         prev_name = mi->map.name;
+        //save prev name
+        prev_name = mi->map.name;
 
-//         //update total size
-//         size = mi->map.end - mi->map.start;
-//         total_size += size;
+        //update total size
+        size = mi->map.end - mi->map.start;
+        total_size += size;
 
-//         if(0 != (r = xcc_util_write_format(log_fd,
-//                                            "    %0"XCC_UTIL_FMT_ADDR"-%0"XCC_UTIL_FMT_ADDR" %c%c%c %*"PRIxPTR" %*"PRIxPTR" %s%s\n",
-//                                            mi->map.start, mi->map.end,
-//                                            mi->map.flags & PROT_READ ? 'r' : '-',
-//                                            mi->map.flags & PROT_WRITE ? 'w' : '-',
-//                                            mi->map.flags & PROT_EXEC ? 'x' : '-',
-//                                            width_offset, mi->map.offset,
-//                                            width_size, size,
-//                                            name, load_bias_buf))) return r;
-//     }
-//     if(0 != (r = xcc_util_write_format(log_fd, "    TOTAL SIZE: 0x%"PRIxPTR"K (%"PRIuPTR"K)\n\n",
-//                                        total_size / 1024, total_size / 1024))) return r;
+        if(0 != (r = xcc_util_write_format(log_fd,
+                                           "    %0"XCC_UTIL_FMT_ADDR"-%0"XCC_UTIL_FMT_ADDR" %c%c%c %*"PRIxPTR" %*"PRIxPTR" %s%s\n",
+                                           mi->map.start, mi->map.end,
+                                           mi->map.flags & PROT_READ ? 'r' : '-',
+                                           mi->map.flags & PROT_WRITE ? 'w' : '-',
+                                           mi->map.flags & PROT_EXEC ? 'x' : '-',
+                                           width_offset, mi->map.offset,
+                                           width_size, size,
+                                           name, load_bias_buf))) return r;
+    }
+    if(0 != (r = xcc_util_write_format(log_fd, "    TOTAL SIZE: 0x%"PRIxPTR"K (%"PRIuPTR"K)\n\n",
+                                       total_size / 1024, total_size / 1024))) return r;
 
-//     return 0;
-// }
-
-#define CHECK_MAPS(_maps)
-    do{
-        if (NULL != strstr(map->name, _maps))
-            return 0;
-    } while(0)
-
-/* Android-EMU: start of modification */
+    return 0;
+}
 
 /**
- * Android-EMU: 
+ * Android-EMU:
  * prune the image by removing redundant and non-critical data
  */
-static size_t dump_size(fc_map_t* map, int java_dump)
+#define CHECK_MAPS(_maps)                    \
+    do{                                      \
+        if (NULL != strstr(map->name, _maps))\
+            return 0;                        \
+    } while(0)
+
+
+static size_t dump_size(xcd_map_t* map, int java_dump)
 {
     // ignore segments that we do not have access to
     if (!(map->flags & PROT_READ) && !(map->flags & PROT_WRITE))
@@ -295,10 +299,6 @@ static size_t dump_size(fc_map_t* map, int java_dump)
         if (map->flags & PROT_EXEC)
         {
             return 0;
-        }
-        if (!map->dump_state)
-        {
-            CHECK_SUFFIX(".so");
         }
         CHECK_MAPS(".db");
         CHECK_MAPS(".crc");
@@ -346,43 +346,47 @@ static size_t dump_size(fc_map_t* map, int java_dump)
  * Android-EMU:
  * coredump the process memory image
  */
-void fc_coredump_memory(xcd_maps_t *self, int fd)
+ #pragma GCC diagnostic ignored "-Wgnu-statement-expression"
+int fc_coredump_memory(xcd_maps_t *self, int fd, int java_dump)
 {
-    xcd_maps_itme_t *mi;
+    xcd_maps_item_t *mi;
     ElfW(Phdr) phdr;
+    Elf32_Off dataoff = get_dataoff();
+    Elf32_Off offset = dataoff; //TODO: add offset
     uintptr_t  size = 0;
     TAILQ_FOREACH (mi, &(self->maps), link)
     {
         phdr.p_type = PT_LOAD;
-        phdr.p_offset = offest;
-        phdr.p_vaddr = mi->maps.start;
+        phdr.p_offset = offset; //TODO: add offset
+        phdr.p_vaddr = mi->map.start;
         phdr.p_paddr = 0;
-        phdr.p_filesz = dump_size(&mi->map);
+        phdr.p_filesz = dump_size(&mi->map, java_dump);
         phdr.p_memsz = mi->map.end - mi->map.start;
         offset += phdr.p_filesz;
-        phdr.p_flags = m->map.flags & PROT_READ ? PF_R : 0;
-        if (m->map.flags & PROT_WRITE)
+        phdr.p_flags = mi->map.flags & PROT_READ ? PF_R : 0;
+        if (mi->map.flags & PROT_WRITE)
         {
             phdr.p_flags |= PF_W;
         }
-        if (m->map.flags & PROT_EXEC)
+        if (mi->map.flags & PROT_EXEC)
         {
             phdr.p_flags |= PF_X;
         }
         phdr.p_align = PAGE_SIZE;
-        nwrite = XCC_UTIL_TEMP_FAILURE_RETRY(write(fd, &phdr, sizeof(phdr)));
-        if nwrite != sizeof(phdr)
+        ssize_t nwrite = XCC_UTIL_TEMP_FAILURE_RETRY(write(fd, &phdr, sizeof(phdr)));
+        if (nwrite != sizeof(phdr))
         {
-            LOGE("FC: coredump error!");
-            return;
+            xcc_util_write_format(fd, "FC: coredump error!");
+            return -1;
         }
         size += sizeof(phdr);
     }
     if(0 != xcc_util_write_format(fd, "    TOTAL SIZE: 0x%"PRIxPTR"K (%"PRIuPTR"K)\n\n",
-                                size / 1024, size / 1024)){
-        LOGE("FC: coredump total size record error!");
-        return;
+                                  size / 1024, size / 1024)){
+        xcc_util_write_format(fd, "FC: coredump total size record error!");
+        return 0;
     }
+    return 0;
 }
 
 /* Android-EMU: end of modification */

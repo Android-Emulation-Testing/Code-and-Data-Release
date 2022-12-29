@@ -53,6 +53,8 @@
 #include "xcd_util.h"
 #include "xcd_sys.h"
 
+#include "tvideo_utils.h"
+
 typedef struct xcd_thread_info
 {
     xcd_thread_t t;
@@ -390,39 +392,39 @@ static int xcd_process_if_need_dump(char *tname, regex_t *re, size_t re_cnt)
 
 /* Android-EMU: start of modification */
 
-static int api_level;
-int  record_fd;
+static int record_api_level;
+static int record_fd;
 
-void record_signal_handler(int sig, siginfo_t *si, void *uc)
+static void record_signal_handler(int sig, siginfo_t *si, void *uc)
 {
-        char buf[2048] = "\0";
-        size_t len;
+    char buf[2048] = "\0";
+    size_t len;
 
-        (void)sig;
+    (void)sig;
 
-        //restore the signal handler
-        if(0 != xcc_signal_crash_unregister()) _exit(10);
+    //restore the signal handler
+    if(0 != xcc_signal_crash_unregister()) _exit(10);
 
-        if(record_fd >= 0)
-        {
-            //dump signal, code, backtrace
-            if(0 != xcc_util_write_format_safe(record_fd,
-                                            "\n\n"
-                                            "xcrash error debug:\n"
-                                            "dumper has crashed (signal: %d, code: %d)\n",
-                                            si->si_signo, si->si_code)) goto end;
-            if(0 < (len = xcc_unwind_get(api_level, si, uc, buf, sizeof(buf))))
-                xcc_util_write(record_fd, buf, len);
+    if(record_fd >= 0)
+    {
+        //dump signal, code, backtrace
+        if(0 != xcc_util_write_format_safe(record_fd,
+                                           "\n\n"
+                                           "xcrash error debug:\n"
+                                           "dumper has crashed (signal: %d, code: %d)\n",
+                                           si->si_signo, si->si_code)) goto end;
+        if(0 < (len = xcc_unwind_get(record_api_level, si, uc, buf, sizeof(buf))))
+            xcc_util_write(record_fd, buf, len);
 
         end:
-            xcc_util_write_str(record_fd, "\n\n");
-        }
-        xcc_signal_crash_queue(si);
+        xcc_util_write_str(record_fd, "\n\n");
+    }
+    xcc_signal_crash_queue(si);
 }
 
 static void record_safeguard()
 {
-    xcc_unwind_init(api_level);
+    xcc_unwind_init(record_api_level);
     xcc_signal_crash_register(record_signal_handler);
 }
 
@@ -450,19 +452,18 @@ int xcd_process_record(xcd_process_t *self,
     int                thd_matched_regex = 0;
     int                thd_ignored_by_limit = 0;
     
-    record_fd = log_fd;
     TAILQ_FOREACH(thd, &(self->thds), link)
     {
         if(thd->t.tid == self->crash_tid)
         {
             /* Android-EMU: start of modification */
-            
+
             // Android-EMU: capture the four-fold in-situ information with the following four steps
             // 1. record execution contexts
-            pid_t context_pid = fork(); 
+            pid_t context_pid = fork();
             if(-1 == context_pid)
             {
-                xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"excution context fork failed");
+                xcc_util_write_format_safe(log_fd, "FC: excution context fork failed");
                 return -1;
             }
             else if(0 == context_pid)
@@ -472,58 +473,58 @@ int xcd_process_record(xcd_process_t *self,
                 if(0 != (r = xcd_process_record_signal_info(self, log_fd))) goto err_context;
                 if(0 != (r = xcd_process_record_abort_message(self, log_fd, api_level))) goto err_context;
                 if(0 != (r = xcd_thread_record_regs(&(thd->t), log_fd))) goto err_context;
-                if(0 == xcd_thread_load_frames(&(thd->t), self->maps))           
+                if(0 == xcd_thread_load_frames(&(thd->t), self->maps))
                 {
                     if(0 != (r = xcd_thread_record_backtrace(&(thd->t), log_fd))) goto err_context;
-                    if(0 != (r = xcd_thread_record_buildid(&(thd->t), log_fd, dump_elf_hash, 
-                              xcc_util_signal_has_si_addr(self->si) ? -(uintptr_t)self->si->si_addr : 0))) goto err_context;
+                    if(0 != (r = xcd_thread_record_buildid(&(thd->t), log_fd, dump_elf_hash,
+                                                           xcc_util_signal_has_si_addr(self->si) ? -(uintptr_t)self->si->si_addr : 0))) goto err_context;
                     if(0 != (r = xcd_thread_record_stack(&(thd->t), log_fd))) goto err_context;
-                    if(0 != (r = xcd_thread_record_memory(&(thd->t), log_fd))) goto err_context;                       
+                    if(0 != (r = xcd_thread_record_memory(&(thd->t), log_fd))) goto err_context;
                 }
                 exit(0);
                 err_context:
-                    xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"excution context record failed");
-                    return;
+                xcc_util_write_format_safe(log_fd, "FC: excution context record failed");
+                return r;
             }
             // 2. record the memory image
             pid_t image_pid = fork();
             if(-1 == image_pid)
             {
-                xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"memory image fork failed");
+                xcc_util_write_format_safe(log_fd, "FC: memory image fork failed");
                 return -1;
             }
             else if(0 == image_pid)
             {
                 record_safeguard();
                 //the memory image recording function
-                if(dump_map) if(0 != (r = fc_coredump_memory(self->maps, log_fd))) goto err_image; 
+                if(dump_map) if(0 != (r = fc_coredump_memory(self->maps, log_fd, check_java_dump()))) goto err_image;
                 exit(0);
                 err_image:
-                    xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"memory image record failed");
-                    return;
+                xcc_util_write_format_safe(log_fd, "FC: memory image record failed");
+                return r;
             }
             // 3. record Android logcat
             pid_t logcat_pid = fork();
             if(-1 == logcat_pid)
             {
-                xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"Android logcat fork failed");
+                xcc_util_write_format_safe(log_fd, "FC: Android logcat fork failed");
                 return -1;
             }
             else if(0 == logcat_pid)
             {
                 record_safeguard();
-                if(0 != (r = xcc_util_record_logcat(log_fd, self->pid, api_level, 
-                        logcat_system_lines, logcat_events_lines,logcat_main_lines))) goto err_logcat; 
+                if(0 != (r = xcc_util_record_logcat(log_fd, self->pid, api_level,
+                                                    logcat_system_lines, logcat_events_lines,logcat_main_lines))) goto err_logcat;
                 exit(0);
                 err_logcat:
-                    xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"Android logcat record failed");
-                    return;
+                xcc_util_write_format_safe(log_fd, "FC: Android logcat record failed");
+                return r;
             }
             // 4. record system resources
             pid_t resource_pid = fork();
             if(-1 == resource_pid)
             {
-                xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"system resources fork failed");
+                xcc_util_write_format_safe(log_fd, "FC: system resources fork failed");
                 return -1;
             }
             else if(0 == resource_pid)
@@ -534,16 +535,31 @@ int xcd_process_record(xcd_process_t *self,
                 if(0 != (r = xcc_meminfo_record(log_fd, self->pid))) goto err_resource;
                 exit(0);
                 err_resource:
-                    xcc_util_write_format_safe(log_fd, XC_CRASH_ERR_TITLE"system resources record failed");
-                    return;
+                xcc_util_write_format_safe(log_fd, "FC: system resources record failed");
+                return r;
             }
 
             /* Android-EMU: end of modification */
+//            if(0 != (r = xcd_thread_record_info(&(thd->t), log_fd, self->pname))) return r;
+//            if(0 != (r = xcd_process_record_signal_info(self, log_fd))) return r;
+//            if(0 != (r = xcd_process_record_abort_message(self, log_fd, api_level))) return r;
+//            if(0 != (r = xcd_thread_record_regs(&(thd->t), log_fd))) return r;
+//            if(0 == xcd_thread_load_frames(&(thd->t), self->maps))
+//            {
+//                if(0 != (r = xcd_thread_record_backtrace(&(thd->t), log_fd))) return r;
+//                if(0 != (r = xcd_thread_record_buildid(&(thd->t), log_fd, dump_elf_hash, xcc_util_signal_has_si_addr(self->si) ? (uintptr_t)self->si->si_addr : 0))) return r;
+//                if(0 != (r = xcd_thread_record_stack(&(thd->t), log_fd))) return r;
+//                if(0 != (r = xcd_thread_record_memory(&(thd->t), log_fd))) return r;
+//            }
+//            if(dump_map) if(0 != (r = xcd_maps_record(self->maps, log_fd))) return r;
+//            if(0 != (r = xcc_util_record_logcat(log_fd, self->pid, api_level, logcat_system_lines, logcat_events_lines, logcat_main_lines))) return r;
+//            if(dump_fds) if(0 != (r = xcc_util_record_fds(log_fd, self->pid))) return r;
+//            if(dump_network_info) if(0 != (r = xcc_util_record_network_info(log_fd, self->pid, api_level))) return r;
+//            if(0 != (r = xcc_meminfo_record(log_fd, self->pid))) return r;
 
             break;
         }
     }
-
     if(!dump_all_threads) return 0;
 
     //parse thread name whitelist regex
