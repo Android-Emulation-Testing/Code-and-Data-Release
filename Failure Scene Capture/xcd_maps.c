@@ -352,12 +352,12 @@ int fc_coredump_memory(xcd_maps_t *self, int fd, int java_dump)
     xcd_maps_item_t *mi;
     ElfW(Phdr) phdr;
     Elf32_Off dataoff = get_dataoff();
-    Elf32_Off offset = dataoff; //TODO: add offset
+    Elf32_Off offset = dataoff;
     uintptr_t  size = 0;
     TAILQ_FOREACH (mi, &(self->maps), link)
     {
         phdr.p_type = PT_LOAD;
-        phdr.p_offset = offset; //TODO: add offset
+        phdr.p_offset = offset;
         phdr.p_vaddr = mi->map.start;
         phdr.p_paddr = 0;
         phdr.p_filesz = dump_size(&mi->map, java_dump);
