@@ -282,14 +282,14 @@ int xcd_maps_record(xcd_maps_t *self, int log_fd)
  * Android-EMU:
  * prune the image by removing redundant and non-critical data
  */
-#define CHECK_MAPS(_maps)                    \
+#define CHECK_DUMP(_maps)                    \
     do{                                      \
         if (NULL != strstr(map->name, _maps))\
             return 0;                        \
     } while(0)
 
 
-static size_t dump_size(xcd_map_t* map, int java_dump)
+static size_t get_dump_size(xcd_map_t* map, int java_dump)
 {
     // ignore segments that we do not have access to
     if (!(map->flags & PROT_READ) && !(map->flags & PROT_WRITE))
@@ -302,40 +302,40 @@ static size_t dump_size(xcd_map_t* map, int java_dump)
         {
             return 0;
         }
-        CHECK_MAPS(".db");
-        CHECK_MAPS(".crc");
-        CHECK_MAPS(".hyb");
-        CHECK_MAPS(".dat");
-        CHECK_MAPS(".crc");
-        CHECK_MAPS(".hyb");
-        CHECK_MAPS(".ttf");
-        CHECK_MAPS(".lock");
-        CHECK_MAPS(".relro");
-        CHECK_MAPS(".db-shm");
-        CHECK_MAPS(".data");
-        CHECK_MAPS(".otf");
-        CHECK_MAPS("anon_inode:dmabuf");
-        CHECK_MAPS("Cookies");
-        CHECK_MAPS("[vectors]");
-        CHECK_MAPS("event-log-tags");
-        CHECK_MAPS("settings_config");
-        CHECK_MAPS("thread signal stack");
         if (!java_dump)
         {
-            CHECK_MAPS("jit-cache");
-            CHECK_MAPS(".art");
-            CHECK_MAPS(".oat");
-            CHECK_MAPS(".vdex");
-            CHECK_MAPS(".odex");
-            CHECK_MAPS(".dex");
-            CHECK_MAPS(".apk");
-            CHECK_MAPS(".jar");
-            CHECK_MAPS("/data/dalvik-cache");
-            CHECK_MAPS("/dev/ashmem");
-            CHECK_MAPS("/dev/__properties__");
-            CHECK_MAPS("anon:dalvik");
-            CHECK_MAPS("jit-cache");
+            CHECK_DUMP("jit-cache");
+            CHECK_DUMP(".art");
+            CHECK_DUMP(".oat");
+            CHECK_DUMP(".vdex");
+            CHECK_DUMP(".odex");
+            CHECK_DUMP(".dex");
+            CHECK_DUMP(".apk");
+            CHECK_DUMP(".jar");
+            CHECK_DUMP("/data/dalvik-cache");
+            CHECK_DUMP("/dev/ashmem");
+            CHECK_DUMP("/dev/__properties__");
+            CHECK_DUMP("anon:dalvik");
+            CHECK_DUMP("jit-cache");
         }
+        CHECK_DUMP(".db");
+        CHECK_DUMP(".crc");
+        CHECK_DUMP(".hyb");
+        CHECK_DUMP(".dat");
+        CHECK_DUMP(".crc");
+        CHECK_DUMP(".hyb");
+        CHECK_DUMP(".ttf");
+        CHECK_DUMP(".lock");
+        CHECK_DUMP(".relro");
+        CHECK_DUMP(".db-shm");
+        CHECK_DUMP(".data");
+        CHECK_DUMP(".otf");
+        CHECK_DUMP("anon_inode:dmabuf");
+        CHECK_DUMP("Cookies");
+        CHECK_DUMP("[vectors]");
+        CHECK_DUMP("event-log-tags");
+        CHECK_DUMP("settings_config");
+        CHECK_DUMP("thread signal stack");
     }
     else if (!(map->flags & PROT_WRITE))
     {
@@ -348,23 +348,28 @@ static size_t dump_size(xcd_map_t* map, int java_dump)
  * Android-EMU:
  * coredump the process memory image
  */
- #pragma GCC diagnostic ignored "-Wgnu-statement-expression"
+#pragma GCC diagnostic ignored "-Wgnu-statement-expression"
 int fc_coredump_memory(xcd_maps_t *self, int fd, int java_dump)
 {
     xcd_maps_item_t *mi;
     ElfW(Phdr) phdr;
     Elf32_Off offset = get_dataoff();
-    uintptr_t size = 0;
+    uintptr_t total_size = 0;
     TAILQ_FOREACH (mi, &(self->maps), link)
     {
-        phdr.p_type = PT_LOAD;
-        phdr.p_offset = offset;
         phdr.p_vaddr = mi->map.start;
         phdr.p_paddr = 0;
-        phdr.p_filesz = dump_size(&mi->map, java_dump);
+        phdr.p_type = PT_LOAD;
+        phdr.p_offset = offset;
+        phdr.p_filesz = get_dump_size(&mi->map, java_dump);
         phdr.p_memsz = mi->map.end - mi->map.start;
+        phdr.p_align = PAGE_SIZE;
         offset += phdr.p_filesz;
-        phdr.p_flags = mi->map.flags & PROT_READ ? PF_R : 0;
+        phdr.p_flags = 0;
+        if (mi->map.flags & PROT_READ)
+        {
+            phdr.p_flags = PF_R;
+        }
         if (mi->map.flags & PROT_WRITE)
         {
             phdr.p_flags |= PF_W;
@@ -373,17 +378,17 @@ int fc_coredump_memory(xcd_maps_t *self, int fd, int java_dump)
         {
             phdr.p_flags |= PF_X;
         }
-        phdr.p_align = PAGE_SIZE;
-        ssize_t nwrite = XCC_UTIL_TEMP_FAILURE_RETRY(write(fd, &phdr, sizeof(phdr)));
-        if (nwrite != sizeof(phdr))
+        ssize_t write_size = XCC_UTIL_TEMP_FAILURE_RETRY(write(fd, &phdr, sizeof(phdr)));
+        if (write_size != sizeof(phdr))
         {
             xcc_util_write_format(fd, "FC: coredump error!");
             return -1;
         }
-        size += sizeof(phdr);
+        total_size += sizeof(phdr);
     }
     if(0 != xcc_util_write_format(fd, "    TOTAL SIZE: 0x%"PRIxPTR"K (%"PRIuPTR"K)\n\n",
-                                  size / 1024, size / 1024)){
+                                  total_size / 1024, total_size / 1024))
+    {
         xcc_util_write_format(fd, "FC: coredump total size record error!");
         return 0;
     }
