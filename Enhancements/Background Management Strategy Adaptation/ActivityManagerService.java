@@ -3723,8 +3723,12 @@ public class ActivityManagerService extends IActivityManager.Stub
 
             /* Android-EMU: start of modification */
 
-            // Android-EMU: stop the app package atomically
-            forceStopPackage(AppGlobals.getPackageManager().getNameForUid(app.uid), 0);
+            // Android-EMU: force stop the app package atomically
+            try {
+                forceStopPackage(AppGlobals.getPackageManager().getNameForUid(app.uid), 0);
+            } catch (RemoteException e) {
+                Slog.w(TAG, "Warning: unable to force stop package uid " + app.uid);
+            }
 
             /* Android-EMU: end of modification */
 

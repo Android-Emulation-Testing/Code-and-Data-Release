@@ -18,7 +18,8 @@ The full list of files we modify is listed below. The modified files are availab
 | File | Changed Symbols | Purpose | Location in AOSP |
 | ---- | ---- | ---- | ---- |
 |   [`ActivityManagerService.java`](ActivityManagerService.java)   |   `appDiedLocked`   |  Atomic process group killing  | `frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java` |
-|   [`processgroup.cpp`](processgroup.cpp)   |   `KillProcessGroup`   |  Atomic process group killing  | `system/core/libprocessgroup/processgroup.cpp` |
+|   [`android_util_Process.cpp`](android_util_Process.cpp)   |   `android_os_Process_killProcessGroup`   |  Atomic process group killing  | `frameworks/base/core/jni/android_util_Process.cpp` |
+|   [`ProcessList.java`](ProcessList.java)   |   `killPackageProcessesLocked`   |  Atomic process group killing  | `frameworks/base/services/core/java/com/android/server/am/ProcessList.java` |
 |   [`ActivityManagerConstants.java`](ActivityManagerConstants.java)   |   `DEFAULT_BACKGROUND_SETTLE_TIME, DEFAULT_CONTENT_PROVIDER_RETAIN_TIME`   |  Background management strategy tuning  | `frameworks/base/services/core/java/com/android/server/am/ActivityManagerConstants.java` |
 |   [`config.xml`](config.xml)   |   `config_lowMemoryKillerMinFreeKbytesAbsolute, config_extraFreeKbytesAbsolute`   |  Background management strategy tuning  | `frameworks/base/core/res/res/values/config.xml` |
 |   [`device.mk`](device.mk)   |   `PRODUCT_PROPERTY_OVERRIDES`   |  Background management strategy tuning   | `device/google/cuttlefish/shared/device.mk` |
